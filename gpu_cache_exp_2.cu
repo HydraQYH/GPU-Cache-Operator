@@ -24,6 +24,7 @@ __global__ void cacheKernel(int* array_ptr, int* locked, int* result_ptr) {
         __syncthreads();
 
         __stwb(thdPtr, x + threadIdx.x);    // Flush to L2 Cache?
+        __threadfence();    // Memory Barrier to force order: st -> atom.exch
         atomicExch(locked, 1);  // set *locked to 1
     } else if (blockIdx.x == 1) {
         int x = __ldca(thdPtr); // Load cache line to SM1's L1 Cache
